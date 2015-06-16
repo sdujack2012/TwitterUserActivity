@@ -31,12 +31,12 @@ class TwitterUserActivity {
      * user activity data by hour
      */
     private $userActivityData;
-    
+
     /**
      * user activity data by hour
      */
     private $username;
-    
+
     /**
      * maximum number of timelines to get
      */
@@ -72,10 +72,10 @@ class TwitterUserActivity {
         // set dimensions
         $w = 520;
         $h = 300;
-        $barW=10;
-        $barGap=20;
-        $maxBarHeight=1000;
-        
+        $barW = 10;
+        $barGap = 20;
+        $maxBarHeight = 240 ;
+
         $font = './arial.ttf';
         // create image
         $im = imagecreate($w, $h);
@@ -85,33 +85,33 @@ class TwitterUserActivity {
         $red = imagecolorallocate($im, 0xFF, 0x00, 0x00);
         $green = imagecolorallocate($im, 0x50, 0xB6, 0x30);
         $blue = imagecolorallocate($im, 0x00, 0x00, 0xFF);
-        
+
         //define origin x,y
-        $origin_X=20;
-        $origin_Y=265;
+        $origin_X = 20;
+        $origin_Y = 265;
         // draw border
         imagerectangle($im, 0, 0, $w - 2, $h - 2, $black);                      // border uses background colur also
         imagecolortransparent($im, $bg);                             // now make bg colour transparent
         //draw X_axis
-        imageline ( $im , $origin_X , 5 ,$origin_X ,$origin_Y , $green );
-        imagettftext($im, 10, 0, $w/2 , $h-5 , $black, $font, "Hour");
+        imageline($im, $origin_X, 5, $origin_X, $origin_Y, $green);
+        imagettftext($im, 10, 0, $w / 2, $h - 5, $black, $font, "Hour");
         //draw Y_axis
-        imageline ( $im , $origin_X , $origin_Y , $w-10 ,$origin_Y , $green );
-        imagettftext($im, 10, 90,  15 , $h/2 , $black, $font, "Number of Twitters");
+        imageline($im, $origin_X, $origin_Y, $w - 10, $origin_Y, $green);
+        imagettftext($im, 10, 90, 15, $h / 2, $black, $font, "Number of Twitters");
         //draw title
-        imagettftext($im, 10, 0, $w/2-50 , 20 , $black, $font, $this->username."'s Acititiy In Twitter");
-        
-        
-        // define X, Y
-        $initial_X_axis=30;
-        $initial_Y_axis=260;
-        
-        for($i=0;$i<24;$i++){
-            $barcolor = $blue;
-            imagefilledrectangle($im, $initial_X_axis, $initial_Y_axis-$maxBarHeight*$this->userActivityData[$i]/$this->count, $initial_X_axis+$barW, $initial_Y_axis,  $barcolor);
-            imagettftext($im, 10, 0,($initial_X_axis+ $initial_X_axis+$barW)/2,  $initial_Y_axis+20 , $red, $font, $i);
+        imagettftext($im, 10, 0, $w / 2 - 50, 15, $black, $font, $this->username . "'s Acititiy In Twitter");
 
-            $initial_X_axis +=$barGap; 
+
+        // define X, Y
+        $initial_X_axis = 30;
+        $initial_Y_axis = 260;
+
+        for ($i = 0; $i < 24; $i++) {
+            $barcolor = $blue;
+            imagefilledrectangle($im, $initial_X_axis, $initial_Y_axis - $maxBarHeight * $this->userActivityData[$i] / $this->count, $initial_X_axis + $barW, $initial_Y_axis, $barcolor);
+            imagettftext($im, 10, 0, ($initial_X_axis + $initial_X_axis + $barW) / 2, $initial_Y_axis + 20, $red, $font, $i);
+
+            $initial_X_axis +=$barGap;
         }
         // send image header
         header("content-type: image/png");

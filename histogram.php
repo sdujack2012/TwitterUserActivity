@@ -1,7 +1,8 @@
 <?php
+
 require "TwitterUserActivity.php";
 
-$username = $_POST["username"];
+$username = $_GET["username"];
 $twitterActivity = new TwitterUserActivity($username);
 $twitterActivity->render();
 /* 
