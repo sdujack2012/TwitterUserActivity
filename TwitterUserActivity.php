@@ -31,28 +31,31 @@ class TwitterUserActivity {
 	/**
      * user activity data by hour
      */
-    private $userActivityData=array();
+    private $userActivityData;
 	
 	
 	
     public function __construct() {
 		$configReader = new ConfigReader("API.config");
         $this->APIConfig = $configReader->config;
-		
+		$this->userActivityData=array_fill(0, 24, 0);
         $this->connection = new TwitterOAuth($this->APIConfig->ConsumerKey,
                                         $this->APIConfig->ConsumerSecret,
                                          $this->APIConfig->AccessToken,
                                           $this->APIConfig->AccessTokenSecret);
+        $this->getActivitiesPerHouse();
         
     }
     public function getActivitiesPerHouse() {
 		$timeLines = $this->getTimeLinesByUsername("twitterapi");
 		foreach ($timeLines as $timeLine) {
+			
 			$date = $this->processTimeString($timeLine->created_at);
-			$userActivityData[$date->format('h')]++;
+			if($date)
+				$this->userActivityData[intval($date->format('h'))]++;
 		}
-                $time  = $this->processTimeString($timeLines[1]->created_at);
-		var_dump($time);
+                
+		var_dump($this->userActivityData);
     }
    
     public function getTimeLinesByUsername($Username) {
