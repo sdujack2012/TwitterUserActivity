@@ -71,10 +71,10 @@ class TwitterUserActivity {
         $this->getActivitiesPerHouse();
         // set dimensions
         $w = 520;
-        $h = 300;
+        $h = 520;
         $barW = 10;
         $barGap = 20;
-        $maxBarHeight = 240 ;
+        $maxBarHeight = 400 ;
 
         $font = './arial.ttf';
         // create image
@@ -88,7 +88,7 @@ class TwitterUserActivity {
 
         //define origin x,y
         $origin_X = 20;
-        $origin_Y = 265;
+        $origin_Y = $h-35;
         // draw border
         imagerectangle($im, 0, 0, $w - 2, $h - 2, $black);                      // border uses background colur also
         imagecolortransparent($im, $bg);                             // now make bg colour transparent
@@ -102,15 +102,22 @@ class TwitterUserActivity {
         imagettftext($im, 10, 0, $w / 2 - 50, 15, $black, $font, $this->username . "'s Acititiy In Twitter");
 
 
-        // define X, Y
+        // define X, Y of the first bar
         $initial_X_axis = 30;
-        $initial_Y_axis = 260;
+        $initial_Y_axis = $h-40;
 
         for ($i = 0; $i < 24; $i++) {
             $barcolor = $blue;
-            imagefilledrectangle($im, $initial_X_axis, $initial_Y_axis - $maxBarHeight * $this->userActivityData[$i] / $this->count, $initial_X_axis + $barW, $initial_Y_axis, $barcolor);
-            imagettftext($im, 10, 0, ($initial_X_axis + $initial_X_axis + $barW) / 2, $initial_Y_axis + 20, $red, $font, $i);
-
+            $leftCornerX = $initial_X_axis;
+            $leftCornerY = $initial_Y_axis - $maxBarHeight * $this->userActivityData[$i] / $this->count;
+            $rightCornerX = $initial_X_axis + $barW;
+            $rightCornerY = $initial_Y_axis;
+            $currentBarMiddleX = ($initial_X_axis + $initial_X_axis + $barW) / 2-5;
+            
+            imagefilledrectangle($im, $leftCornerX, $leftCornerY, $rightCornerX, $rightCornerY, $barcolor);
+            imagettftext($im, 10, 0, $currentBarMiddleX, $initial_Y_axis + 20, $red, $font, $i);
+            imagettftext($im, 10, 0, $currentBarMiddleX, $leftCornerY-10, $red, $font, $this->userActivityData[$i]);
+    
             $initial_X_axis +=$barGap;
         }
         // send image header
