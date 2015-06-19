@@ -132,12 +132,9 @@ class TwitterUserActivity {
     }
 
     public function getTimeLinesByUsername($Username) {
-
 		$max = $this->maxPerRequest; //define by twitter API
 		$timeslines=array();
 		$remaining=$this->maxCount;
-		
-                
                 //get timelines
 		$temptimes=$this->connection->get("statuses/user_timeline", array("count" => $max, "screen_name" => $Username, "exclude_replies" => false));
 		$fecthedCount = count($temptimes);
