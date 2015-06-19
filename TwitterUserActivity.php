@@ -33,14 +33,18 @@ class TwitterUserActivity {
     private $userActivityData;
 
     /**
-     * user activity data by hour
+     * user name
      */
     private $username;
 
     /**
      * maximum number of timelines to get
      */
-    private $maxcount = 500;
+    private $maxCount = 500;
+     /**
+     * maximum number of timelines to get per request
+     */
+    private $maxPerRequest = 200; //define by twitter API
 
     /**
      * stores the number of timelines
@@ -99,13 +103,13 @@ class TwitterUserActivity {
         imageline($im, $origin_X, $origin_Y, $w - 10, $origin_Y, $green);
         imagettftext($im, 10, 90, 15, $h / 2, $black, $font, "Number of Twitters");
         //draw title
-        imagettftext($im, 10, 0, $w / 2 - 50, 15, $black, $font, $this->username . "'s Acititiy In Twitter");
+        imagettftext($im, 10, 0, $w / 2 - 50, 15, $black, $font, $this->username . "'s Acititiy In Twitter ");
 
 
         // define X, Y of the first bar
         $initial_X_axis = 30;
         $initial_Y_axis = $h-40;
-
+        //draw the bars
         for ($i = 0; $i < 24; $i++) {
             $barcolor = $blue;
             $leftCornerX = $initial_X_axis;
@@ -128,7 +132,33 @@ class TwitterUserActivity {
     }
 
     public function getTimeLinesByUsername($Username) {
-        return $this->connection->get("statuses/user_timeline", array("count" => $this->maxcount, "screen_name" => $Username, "exclude_replies" => true));
+
+		$max = $this->maxPerRequest; //define by twitter API
+		$timeslines=array();
+		$remaining=$this->maxCount;
+		
+                
+                //get timelines
+		$temptimes=$this->connection->get("statuses/user_timeline", array("count" => $max, "screen_name" => $Username, "exclude_replies" => false));
+		$fecthedCount = count($temptimes);
+		$isFinished = ($fecthedCount!=$max);
+		$remaining -= $fecthedCount;
+		$timeslines=array_merge($timeslines,$temptimes);
+                //loop until we get 500 timelines or  no more than 500 are found
+		while(!$isFinished&&$remaining>0){
+			
+			$nextFetchcount = ($remaining>$max?$max:$remaining);
+			
+			$max_id = $temptimes[$fecthedCount-1]->id;
+			$temptimes=$this->connection->get("statuses/user_timeline", array("count" => $nextFetchcount, "max_id"=>$max_id, "screen_name" => $Username, "exclude_replies" => false));
+			$fecthedCount = count($temptimes);
+			if($nextFetchcount != $fecthedCount){
+				$isFinished = true;
+			}
+			$remaining -= $fecthedCount;
+			$timeslines=array_merge($timeslines,$temptimes);		
+		}
+		return $timeslines;
     }
 
     public function getHourFromTimeString($timestring) {
